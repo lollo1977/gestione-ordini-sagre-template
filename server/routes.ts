@@ -150,6 +150,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete("/api/orders/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const success = await storage.deleteOrder(id);
+
+      if (!success) {
+        return res.status(404).json({ message: "Ordine non trovato" });
+      }
+
+      broadcastToClients({
+        type: "ORDER_DELETED",
+        data: { orderId: id }
+      });
+
+      res.json({ message: "Ordine stornato con successo" });
+    } catch (error) {
+      res.status(500).json({ message: "Errore nello storno dell'ordine" });
+    }
+  });
+
   app.put("/api/orders/:id/complete", async (req, res) => {
     try {
       const { id } = req.params;

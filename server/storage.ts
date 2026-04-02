@@ -26,6 +26,9 @@ export interface IStorage {
   // Settings
   getSettings(): Promise<AppSettings>;
   updateSettings(settings: Partial<AppSettings>): Promise<AppSettings>;
+
+  // Storno
+  deleteOrder(id: string): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -169,6 +172,15 @@ export class MemStorage implements IStorage {
 
     const updatedOrder = { ...order, status: "completed" as const };
     this.orders.set(id, updatedOrder);
+    return true;
+  }
+
+  async deleteOrder(id: string): Promise<boolean> {
+    if (!this.orders.has(id)) return false;
+    this.orders.delete(id);
+    Array.from(this.orderItems.entries())
+      .filter(([, item]) => item.orderId === id)
+      .forEach(([itemId]) => this.orderItems.delete(itemId));
     return true;
   }
 

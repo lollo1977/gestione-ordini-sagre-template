@@ -1,7 +1,18 @@
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Clock, Printer, Receipt, Check } from "lucide-react";
+import { Clock, Printer, Receipt, Check, Trash2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import type { OrderWithItems } from "@shared/schema";
@@ -14,10 +25,27 @@ export default function ActiveOrders() {
   const DISH_CATEGORIES = settings.dishCategories;
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [stornoOrderId, setStornoOrderId] = useState<string | null>(null);
 
   const { data: activeOrders = [], isLoading } = useQuery<OrderWithItems[]>({
     queryKey: ["/api/orders/active"],
     refetchInterval: 5000,
+  });
+
+  const deleteOrderMutation = useMutation({
+    mutationFn: async (orderId: string) => {
+      const response = await apiRequest("DELETE", `/api/orders/${orderId}`);
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Ordine stornato", description: "L'ordine è stato annullato e rimosso." });
+      queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
+      setStornoOrderId(null);
+    },
+    onError: () => {
+      toast({ title: "Errore", description: "Impossibile stornare l'ordine.", variant: "destructive" });
+      setStornoOrderId(null);
+    },
   });
 
   const completeOrderMutation = useMutation({
@@ -301,6 +329,7 @@ export default function ActiveOrders() {
   }
 
   return (
+    <>
     <Card className="bg-white rounded-xl shadow-sm border">
       <CardHeader>
         <CardTitle className="flex items-center">
@@ -365,10 +394,21 @@ export default function ActiveOrders() {
                   </Button>
                   <Button
                     size="sm"
+                    variant="outline"
+                    className="text-red-600 border-red-200 hover:bg-red-50"
+                    onClick={() => setStornoOrderId(order.id)}
+                    data-testid={`button-stornoOrder-${order.id}`}
+                    title="Storna ordine"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    size="sm"
                     variant="destructive"
                     onClick={() => completeOrderMutation.mutate(order.id)}
                     disabled={completeOrderMutation.isPending}
                     data-testid={`button-completeOrder-${order.id}`}
+                    title="Segna come completato"
                   >
                     <Check className="w-4 h-4" />
                   </Button>
@@ -379,5 +419,28 @@ export default function ActiveOrders() {
         </div>
       </CardContent>
     </Card>
+
+    <AlertDialog open={!!stornoOrderId} onOpenChange={open => !open && setStornoOrderId(null)}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Conferma storno ordine</AlertDialogTitle>
+          <AlertDialogDescription>
+            Sei sicuro di voler annullare questo ordine? L'operazione è irreversibile e l'ordine verrà eliminato definitivamente.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel data-testid="button-stornoCancel">Annulla</AlertDialogCancel>
+          <AlertDialogAction
+            className="bg-red-600 hover:bg-red-700 text-white"
+            onClick={() => stornoOrderId && deleteOrderMutation.mutate(stornoOrderId)}
+            disabled={deleteOrderMutation.isPending}
+            data-testid="button-stornoConfirm"
+          >
+            {deleteOrderMutation.isPending ? "Annullamento..." : "Storna ordine"}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 }
