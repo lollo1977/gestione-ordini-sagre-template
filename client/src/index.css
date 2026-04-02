@@ -1,0 +1,135 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================================================
+   TEMA COLORI - Personalizza i colori della tua sagra qui sotto!
+   COLOR THEME - Customize your festival's colors below!
+
+   Per altri valori (nome, categorie, valuta), vedi: shared/config.ts
+   For other settings (name, categories, currency), see: shared/config.ts
+
+   Come cambiare i colori / How to change colors:
+     --primary   : colore principale (pulsanti, header) / main color (buttons, header)
+     --secondary : colore secondario (totali, cassa 2) / secondary color (totals, register 2)
+     --accent    : colore accento (ordini attivi) / accent color (active orders)
+
+   Usa valori H S% L% (es. "207 90% 54%" = blu) / Use H S% L% values (e.g. "207 90% 54%" = blue)
+   ========================================================================== */
+
+:root {
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(20, 14.3%, 4.1%);
+  --muted: hsl(60, 4.8%, 95.9%);
+  --muted-foreground: hsl(25, 5.3%, 44.7%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(20, 14.3%, 4.1%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(20, 14.3%, 4.1%);
+  --border: hsl(20, 5.9%, 90%);
+  --input: hsl(20, 5.9%, 90%);
+  --primary: hsl(207, 90%, 54%);
+  --primary-foreground: hsl(211, 100%, 99%);
+  --secondary: hsl(120, 44%, 45%);
+  --secondary-foreground: hsl(0, 0%, 100%);
+  --accent: hsl(28, 100%, 48%);
+  --accent-foreground: hsl(0, 0%, 100%);
+  --destructive: hsl(0, 84.2%, 60.2%);
+  --destructive-foreground: hsl(60, 9.1%, 97.8%);
+  --ring: hsl(20, 14.3%, 4.1%);
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: hsl(240, 10%, 3.9%);
+  --foreground: hsl(0, 0%, 98%);
+  --muted: hsl(240, 3.7%, 15.9%);
+  --muted-foreground: hsl(240, 5%, 64.9%);
+  --popover: hsl(240, 10%, 3.9%);
+  --popover-foreground: hsl(0, 0%, 98%);
+  --card: hsl(240, 10%, 3.9%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --border: hsl(240, 3.7%, 15.9%);
+  --input: hsl(240, 3.7%, 15.9%);
+  --primary: hsl(207, 90%, 54%);
+  --primary-foreground: hsl(211, 100%, 99%);
+  --secondary: hsl(120, 44%, 45%);
+  --secondary-foreground: hsl(0, 0%, 100%);
+  --accent: hsl(28, 100%, 48%);
+  --accent-foreground: hsl(0, 0%, 100%);
+  --destructive: hsl(0, 62.8%, 30.6%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(240, 4.9%, 83.9%);
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-gray-50 text-foreground;
+  }
+}
+
+@media print {
+  .no-print { 
+    display: none !important; 
+  }
+  .print-only { 
+    display: block !important; 
+  }
+  body { 
+    font-size: 12px; 
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  @page {
+    margin: 5mm;
+    size: 80mm auto; /* Thermal printer width */
+  }
+}
+
+.print-only { 
+  display: none; 
+}
+
+/* Mobile print optimizations */
+@media (max-width: 768px) {
+  .receipt-content {
+    max-width: 100vw !important;
+    width: 100% !important;
+    font-size: 14px;
+  }
+}
+
+/* Thermal receipt styling */
+.thermal-receipt {
+  font-family: 'Courier New', 'Liberation Mono', monospace;
+  line-height: 1.2;
+  color: #000;
+  background: #fff;
+  max-width: 300px;
+  margin: 0 auto;
+  padding: 10px;
+}
+
+.thermal-receipt .header {
+  text-align: center;
+  border-bottom: 1px dashed #000;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+}
+
+.thermal-receipt .content {
+  margin-bottom: 8px;
+}
+
+.thermal-receipt .footer {
+  text-align: center;
+  border-top: 1px dashed #000;
+  padding-top: 8px;
+  margin-top: 8px;
+}

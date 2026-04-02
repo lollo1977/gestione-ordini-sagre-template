@@ -1,0 +1,31 @@
+"Aggiungi una sezione 'Backup e Ripristino' all'interno della scheda Impostazioni (o accanto alla sezione Info Software):
+
+Funzione Esporta: >    - Crea un pulsante 'Scarica Backup Configurazione'.
+
+Al clic, l'app deve generare un file JSON contenente tutti i dati salvati nel localStorage (Nome Sagra, Menu, Prezzi, Coperti e Stato Licenza).
+
+Il file deve essere scaricato automaticamente con un nome dinamico, es: configurazione_luna_wolfie_[NomeSagra].json.
+
+Funzione Importa: >    - Aggiungi un'area di caricamento file (input type file) con l'etichetta 'Ripristina da Backup'.
+
+Al caricamento del file JSON, l'app deve leggere i dati, sovrascrivere il localStorage e mostrare un messaggio di successo: 'Configurazione ripristinata con successo!'.
+
+Dopo l'importazione, esegui un refresh della pagina (window.location.reload()) per applicare immediatamente le nuove impostazioni.
+
+Sicurezza:
+
+Aggiungi un messaggio di avviso: 'Attenzione: l'importazione di un file di backup sovrascriverà tutti i dati attuali'.
+
+Stile: >    - Usa icone semplici (es. una freccia in su per l'export e una in giù per l'import). Mantieni il design pulito e minimale in linea con il brand Luna Wolfie."
+
+Perché questa funzione è un "Salvavita":
+Zero Stress per te: Se una sagra ti chiama perché "è sparito tutto", gli dici semplicemente di caricare il file di backup che gli avevi fatto scaricare il primo giorno.
+
+Portabilità: Possono configurare il menu comodamente a casa sul PC, esportare il file e poi caricarlo sui 5 tablet che useranno alla sagra. In 10 minuti hanno 5 casse sincronizzate con lo stesso menu.
+
+Professionalità: Un software che permette il backup dei dati viene percepito come uno strumento "sicuro" e affidabile.
+
+Un piccolo consiglio extra:
+Chiedi all'Agent di mettere il tasto "Esporta" anche alla fine del Setup Wizard.
+
+"Complimenti! Hai finito la configurazione. Scarica qui il tuo file di backup di sicurezza prima di iniziare." Questo educa l'utente a proteggere il proprio lavoro (e il tuo software).
