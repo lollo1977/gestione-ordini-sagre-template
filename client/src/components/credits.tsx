@@ -43,7 +43,7 @@ export default function Credits() {
           </div>
           <p className="text-sm text-gray-600 leading-relaxed">
             Questo software è protetto da{" "}
-            <span className="font-semibold text-gray-800">Business Source License 1.1 (BSL)</span>.
+            <span className="font-semibold text-gray-800">Licenza Proprietaria Luna Wolfie v2.1</span>.
             L'utilizzo gratuito è concesso esclusivamente a organizzazioni no-profit e associazioni di volontariato.
             Qualsiasi utilizzo commerciale richiede l'acquisizione di una licenza PRO.
           </p>
