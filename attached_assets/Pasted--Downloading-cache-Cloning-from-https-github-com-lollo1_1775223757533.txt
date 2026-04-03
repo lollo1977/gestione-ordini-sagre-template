@@ -1,0 +1,78 @@
+==> Downloading cache...
+==> Cloning from https://github.com/lollo1977/gestione-ordini-sagre-public-version
+==> Checking out commit 562bafc4b88eb856feab7d72e29d4fe57ed805e3 in branch main
+==> Downloaded 222MB in 4s. Extraction took 5s.
+==> Using Node.js version 22.22.0 (default)
+==> Docs on specifying a Node.js version: https://render.com/docs/node-version
+==> Running build command 'npm install; npm run build && npm run db:push'...
+up to date, audited 503 packages in 1s
+65 packages are looking for funding
+  run `npm fund` for details
+19 vulnerabilities (3 low, 9 moderate, 7 high)
+To address issues that do not require attention, run:
+  npm audit fix
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+Run `npm audit` for details.
+> rest-express@1.0.0 build
+> vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+vite v5.4.19 building for production...
+transforming...
+Browserslist: browsers data (caniuse-lite) is 18 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+✓ 1732 modules transformed.
+rendering chunks...
+computing gzip size...
+../dist/public/index.html                   0.63 kB │ gzip:   0.38 kB
+../dist/public/assets/index-9FMXJFxQ.css   66.58 kB │ gzip:  11.55 kB
+../dist/public/assets/index-B6th_qnR.js   429.44 kB │ gzip: 130.30 kB
+✓ built in 3.77s
+  dist/index.js  26.3kb
+⚡ Done in 6ms
+> rest-express@1.0.0 db:push
+> drizzle-kit push
+No config path provided, using default 'drizzle.config.ts'
+Reading config file '/opt/render/project/src/drizzle.config.ts'
+Using 'pg' driver for database querying
+[⣷] Pulling schema from database...
+error: SSL/TLS required
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Object.query (/opt/render/project/src/node_modules/drizzle-kit/bin.cjs:66575:26)
+    at async fromDatabase2 (/opt/render/project/src/node_modules/drizzle-kit/bin.cjs:18700:25) {
+  length: 37,
+  severity: 'FATAL',
+  code: '28000',
+  detail: undefined,
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: undefined,
+  line: undefined,
+  routine: undefined
+}
+==> Uploading build...
+==> Uploaded in 5.9s. Compression took 5.5s
+==> Build successful 🎉
+==> Deploying...
+==> Setting WEB_CONCURRENCY=1 by default, based on available CPUs in the instance
+==> Running 'npm run start'
+> rest-express@1.0.0 start
+> NODE_ENV=production node dist/index.js
+Menu
+1:08:16 PM [express] serving on port 10000
+==> Your service is live 🎉
+==> 
+==> ///////////////////////////////////////////////////////////
+==> 
+==> Available at your primary URL https://gestione-ordini-sagre-public-version.onrender.com
+==> 
+==> ///////////////////////////////////////////////////////////
