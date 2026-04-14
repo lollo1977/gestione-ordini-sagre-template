@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Monitor } from "lucide-react";
@@ -10,6 +11,11 @@ interface RegisterSelectorProps {
 
 export default function RegisterSelector({ numberOfRegisters, onRegisterSelect }: RegisterSelectorProps) {
   const [selectedRegister, setSelectedRegister] = useState<number | null>(null);
+
+  const { data: connectedRegisters = [] } = useQuery<number[]>({
+    queryKey: ['/api/registers/active'],
+    refetchInterval: 4000,
+  });
 
   const handleConfirm = () => {
     if (selectedRegister) {
@@ -32,22 +38,34 @@ export default function RegisterSelector({ numberOfRegisters, onRegisterSelect }
         </CardHeader>
         <CardContent className="space-y-4">
           <div className={`grid gap-3 ${numberOfRegisters <= 2 ? "grid-cols-1" : numberOfRegisters <= 4 ? "grid-cols-2" : "grid-cols-3"}`}>
-            {registers.map((n) => (
-              <Button
-                key={n}
-                data-testid={`button-cassa-${n}`}
-                variant={selectedRegister === n ? "default" : "outline"}
-                className={`h-20 flex flex-col items-center justify-center space-y-1 ${
-                  selectedRegister === n
-                    ? "bg-primary text-white"
-                    : "border-2 hover:border-primary"
-                }`}
-                onClick={() => setSelectedRegister(n)}
-              >
-                <Monitor className="w-6 h-6" />
-                <span className="font-semibold text-base">CASSA {n}</span>
-              </Button>
-            ))}
+            {registers.map((n) => {
+              const isActive = connectedRegisters.includes(n);
+              return (
+                <Button
+                  key={n}
+                  data-testid={`button-cassa-${n}`}
+                  variant={selectedRegister === n ? "default" : "outline"}
+                  className={`h-20 flex flex-col items-center justify-center space-y-1 relative ${
+                    selectedRegister === n
+                      ? "bg-primary text-white"
+                      : "border-2 hover:border-primary"
+                  }`}
+                  onClick={() => setSelectedRegister(n)}
+                >
+                  {isActive && (
+                    <span
+                      className="absolute top-2 right-2 flex items-center gap-1 text-[10px] font-semibold text-green-600"
+                      data-testid={`status-register-active-${n}`}
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                      attiva
+                    </span>
+                  )}
+                  <Monitor className="w-6 h-6" />
+                  <span className="font-semibold text-base">CASSA {n}</span>
+                </Button>
+              );
+            })}
           </div>
 
           {selectedRegister && (

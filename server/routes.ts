@@ -35,6 +35,13 @@ function broadcastToClients(data: any, excludeRegisterId?: number) {
   });
 }
 
+function broadcastRegistersStatus() {
+  const connected = Array.from(wsClients)
+    .filter(c => c.registerId != null)
+    .map(c => c.registerId);
+  broadcastToClients({ type: 'REGISTERS_STATUS', data: connected });
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Serve static files from attached_assets
   app.use('/attached_assets', express.static(path.join(process.cwd(), 'attached_assets')));
@@ -227,6 +234,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Active registers
+  app.get("/api/registers/active", (_req, res) => {
+    const connected = Array.from(wsClients)
+      .filter(c => c.registerId != null)
+      .map(c => c.registerId);
+    res.json(connected);
+  });
+
   // Clear all data except menu
   app.delete("/api/data/clear-except-menu", async (req, res) => {
     try {
@@ -264,14 +279,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (message.type === 'REGISTER_CLIENT' && message.registerId) {
           client.registerId = message.registerId;
           console.log(`Client registered as CASSA ${message.registerId}`);
-          
+
           // Send current active orders to newly connected client
           storage.getActiveOrders().then(orders => {
-            ws.send(JSON.stringify({
-              type: 'INITIAL_SYNC',
-              data: orders
-            }));
+            ws.send(JSON.stringify({ type: 'INITIAL_SYNC', data: orders }));
           });
+
+          // Broadcast updated register list to all clients
+          broadcastRegistersStatus();
         }
       } catch (error) {
         console.error('Error parsing WebSocket message:', error);
@@ -281,11 +296,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     ws.on('close', () => {
       console.log('WebSocket client disconnected');
       wsClients.delete(client);
+      broadcastRegistersStatus();
     });
     
     ws.on('error', (error) => {
       console.error('WebSocket error:', error);
       wsClients.delete(client);
+      broadcastRegistersStatus();
     });
   });
   

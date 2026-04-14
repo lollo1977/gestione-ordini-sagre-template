@@ -361,16 +361,18 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createOrder(insertOrder: InsertOrder, items: InsertOrderItem[]): Promise<OrderWithItems> {
-    const [order] = await db.insert(ordersTable).values(insertOrder).returning();
-    const insertedItems = await Promise.all(
-      items.map(item => db.insert(orderItemsTable).values({ ...item, orderId: order.id }).returning())
-    );
-    const flatItems = insertedItems.flat();
-    const itemsWithDishes = await Promise.all(flatItems.map(async item => {
-      const [dish] = await db.select().from(dishesTable).where(eq(dishesTable.id, item.dishId));
-      return { ...item, dish };
-    }));
-    return { ...order, items: itemsWithDishes };
+    return db.transaction(async (tx) => {
+      const [order] = await tx.insert(ordersTable).values(insertOrder).returning();
+      const insertedItems = await Promise.all(
+        items.map(item => tx.insert(orderItemsTable).values({ ...item, orderId: order.id }).returning())
+      );
+      const flatItems = insertedItems.flat();
+      const itemsWithDishes = await Promise.all(flatItems.map(async item => {
+        const [dish] = await tx.select().from(dishesTable).where(eq(dishesTable.id, item.dishId));
+        return { ...item, dish };
+      }));
+      return { ...order, items: itemsWithDishes };
+    });
   }
 
   async completeOrder(id: string): Promise<boolean> {

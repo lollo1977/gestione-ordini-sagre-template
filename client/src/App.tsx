@@ -26,7 +26,7 @@ function Router() {
 
   const settings = useAppSettings();
 
-  useWebSocket(registerId || undefined);
+  const { isConnected } = useWebSocket(registerId || undefined);
 
   const handleRegisterSelect = (id: number) => {
     setRegisterId(id);
@@ -50,13 +50,24 @@ function Router() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="bg-primary text-white px-4 py-2 flex justify-between items-center text-sm font-semibold">
-        <span>🏪 CASSA {registerId} - Sincronizzazione Attiva</span>
-        <button
-          onClick={resetRegister}
-          className="bg-white/20 hover:bg-white/30 px-3 py-1 rounded text-xs transition-colors"
-        >
-          Cambia Cassa
-        </button>
+        <span>🏪 CASSA {registerId}</span>
+        <div className="flex items-center gap-3">
+          <span
+            data-testid="status-websocket"
+            className={`flex items-center gap-1.5 text-xs font-medium px-2 py-0.5 rounded-full transition-colors ${
+              isConnected ? "bg-green-500/30 text-green-100" : "bg-red-500/30 text-red-200"
+            }`}
+          >
+            <span className={`w-2 h-2 rounded-full ${isConnected ? "bg-green-300 animate-pulse" : "bg-red-400"}`} />
+            {isConnected ? "Sincronizzato" : "Offline"}
+          </span>
+          <button
+            onClick={resetRegister}
+            className="bg-white/20 hover:bg-white/30 px-3 py-1 rounded text-xs transition-colors"
+          >
+            Cambia Cassa
+          </button>
+        </div>
       </div>
 
       <Switch>
