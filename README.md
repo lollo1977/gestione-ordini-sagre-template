@@ -51,7 +51,57 @@ Obbligatoria per eventi a scopo di lucro, grandi sagre o attività commerciali.
 
 1.  **Registrazione:** Prima di iniziare, invia una mail di registrazione a **bibocchia05@gmail.com** (necessaria per assistenza e attivazione PRO).
 2.  **Installazione:** Il software può essere caricato su servizi cloud (come Render) o eseguito localmente.
-3.  **Configurazione:** Modifica il menu e i prezzi direttamente dal file di configurazione o dall'interfaccia (se previsto).
+3.  **Configurazione:** Modifica il menu e i prezzi direttamente dall'interfaccia dell'app.
+
+---
+
+## 🚀 Guida al Deploy su Render
+
+### 1. Scarica il progetto
+Clona o scarica il progetto da GitHub sul tuo computer:
+```bash
+git clone https://github.com/TUO_UTENTE/TUA_REPO.git
+cd TUA_REPO
+```
+
+### 2. Configura il nome del tuo evento
+Esegui lo script di configurazione e inserisci il nome della tua sagra/evento:
+```bash
+node scripts/setup-render.js
+```
+Lo script chiederà il nome dell'evento e aggiornerà automaticamente il file di configurazione del deploy.
+
+### 3. Fai il push su GitHub
+Salva le modifiche e caricale su GitHub:
+```bash
+git add render.yaml
+git commit -m "Configurazione per [Nome Evento]"
+git push
+```
+
+### 4. Deploy su Render
+1. Vai su [render.com](https://render.com) e accedi
+2. Clicca su **New + → Blueprint**
+3. Collega la tua repository GitHub
+4. Render creerà automaticamente il **database** e il **servizio web**
+5. Dopo circa 5-8 minuti l'app sarà online all'indirizzo:
+   ```
+   https://nome-evento-pos.onrender.com
+   ```
+
+### 5. Primo accesso
+Al primo avvio l'app mostra una procedura guidata per configurare:
+- Nome evento e località
+- Numero di casse
+- Menu e prezzi
+
+---
+
+## 💡 Note sul Piano Gratuito di Render
+- Il servizio gratuito va in **"sleep"** dopo 15 minuti di inattività
+- Al primo accesso dopo lo sleep impiega ~30-60 secondi a risvegliarsi
+- I **dati nel database rimangono sempre**, anche durante lo sleep
+- Per un servizio sempre attivo è necessario il piano a pagamento (~$7/mese)
 
 ---
 
