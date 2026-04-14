@@ -1,64 +1,74 @@
-# Restaurant POS System
+# 🐺 Gestione Ordini Sagra - by Luna Wolfie
 
-Sistema di gestione ordini per ristoranti e sagre con interfaccia italiana.
+![Status](https://img.shields.io/badge/Status-Active-brightgreen)
+![Licenza](https://img.shields.io/badge/Licenza-Proprietaria-blue)
+![Version](https://img.shields.io/badge/Version-1.0.0-orange)
 
-## Funzionalità
+**Gestione Ordini Sagra** è l'applicazione definitiva per semplificare la presa degli ordini e la gestione della cassa durante sagre, festival ed eventi gastronomici. Sviluppata per essere veloce, intuitiva e affidabile, permette una comunicazione in tempo reale tra cassa e cucina.
 
-- ✅ Creazione ordini con numero coperti
-- ✅ Gestione resto automatica per pagamenti cash
-- ✅ Stampa scontrini cucina e cliente
-- ✅ Menu management con categorie
-- ✅ Reports e analytics
-- ✅ Sincronizzazione real-time tra casse
-- ✅ Supporto tavoli alfanumerici (A1, VIP, etc.)
+---
 
-## Setup Locale
+## ✨ Caratteristiche Principali
 
-1. Clona il repository
-2. Installa dipendenze: `npm install`
-3. Configura DATABASE_URL nel file .env
-4. Applica schema: `npm run db:push`
-5. Avvia sviluppo: `npm run dev`
+* 🚀 **Velocità Estrema:** Interfaccia ottimizzata per non far perdere tempo alla cassa.
+* 📱 **Multi-dispositivo:** Funziona su PC, Tablet e Smartphone via browser.
+* 🔗 **WebSocket Real-time:** Gli ordini arrivano in cucina istantaneamente.
+* 📊 **Riepilogo Totali:** Gestione automatica dei conti e delle quantità.
+* 🖨️ **Stampa Scontrini:** Formattazione pronta per la stampa (con crediti personalizzabili).
 
-## Deploy su Render.com
+---
+## 🛠️ Stack Tecnologico
 
-### Opzione 1: Con Database Render
-1. Collega il tuo repository GitHub a Render
-2. Render.com rileverà automaticamente il `render.yaml`
-3. Creerà sia l'app web che il database PostgreSQL
+Il progetto è costruito con le migliori tecnologie web moderne per garantire stabilità e reattività:
 
-### Opzione 2: Con Supabase Database (NON TESTATO)
-1. Crea un progetto su [supabase.com](https://supabase.com)
-2. Vai in Settings → Database → Connection String
-3. Copia la URI connection string
-4. Crea un Web Service su Render con:
-   - Build Command: `npm install && npm run build`
-   - Start Command: `npm start`
-   - Environment Variables:
-     - `NODE_ENV=production`
-     - `DATABASE_URL` (copia dal database)
+* **Backend:** ![NodeJS](https://img.shields.io/badge/Node.js-339933?style=flat&logo=nodedotjs&logoColor=white) - Motore JavaScript lato server veloce e scalabile.
+* **Linguaggio:** ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white) - Per un codice robusto e privo di errori logici.
+* **Frontend:** ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=html5&logoColor=white) ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black) - Struttura e logica client-side.
+* **Styling:** ![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white) ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat&logo=css3&logoColor=white) - Design moderno, responsive e leggero.
+* **Comunicazione:** ![WebSockets](https://img.shields.io/badge/WebSockets-010101?style=flat&logo=socketdotio&logoColor=white) - Per l'invio degli ordini in tempo reale senza ricaricare la pagina.
 
-### Dopo il Deploy
-1. Vai su "Shell" del tuo web service
-2. Esegui: `npm run db:push` per creare le tabelle
-3. Il sistema sarà pronto per l'uso
+---
 
-## Environment Variables
+## 📜 Licenza e Modalità d'Uso
 
-- `DATABASE_URL` - Stringa connessione PostgreSQL
-- `NODE_ENV` - production/development
-- `PORT` - Porta del server (auto su Render)
+Il software è rilasciato sotto **Licenza Proprietaria "Luna Wolfie" v2.1**. L'utilizzo del software implica l'accettazione integrale della licenza.
 
-## Struttura Database
+### 🆓 Versione Free (No-Profit)
+L'uso è gratuito esclusivamente per:
+* Organizzazioni No-Profit e piccoli comitati di volontariato.
+* Scopi personali o didattici.
+* **Nota:** È vietato rimuovere la dicitura *"Realizzato da Luna Wolfie"* dagli scontrini.
 
-- `dishes` - Menu items con prezzo e categoria
-- `orders` - Ordini con tavolo, cliente, coperti, totale
-- `order_items` - Dettaglio piatti per ordine
+### 💎 Versione PRO (Commerciale)
+Obbligatoria per eventi a scopo di lucro, grandi sagre o attività commerciali.
+* **Costo:** 5,00 € una tantum.
+* **Vantaggi:** Codice di attivazione per funzioni avanzate, possibilità di rimuovere/modificare i crediti sugli scontrini, supporto prioritario.
+* **Pagamento:** PayPal, Bonifico o concordato via email.
 
-## Stack Tecnologico
+---
 
-- Frontend: React + TypeScript + Tailwind CSS
-- Backend: Express.js + TypeScript
-- Database: PostgreSQL + Drizzle ORM
-- Real-time: WebSockets
-- Deploy: Render.com ready
+## 🛠️ Come Iniziare
+
+1.  **Registrazione:** Prima di iniziare, invia una mail di registrazione a **bibocchia05@gmail.com** (necessaria per assistenza e attivazione PRO).
+2.  **Installazione:** Il software può essere caricato su servizi cloud (come Render) o eseguito localmente.
+3.  **Configurazione:** Modifica il menu e i prezzi direttamente dal file di configurazione o dall'interfaccia (se previsto).
+
+---
+
+## 📞 Supporto e Personalizzazioni
+
+Hai bisogno di una funzione specifica? Vuoi un'app su misura per la tua sagra?
+* **Bugfix & Sicurezza:** Supporto gratuito per tutti gli utenti registrati.
+* **Funzioni Extra:** Sviluppo su richiesta dietro piccolo contributo simbolico.
+* **Assistenza Fisica:** Disponibile a discrezione dell'autore in zona **Savona e provincia**.
+
+📧 **Contatto Ufficiale:** [bibocchia05@gmail.com](mailto:bibocchia05@gmail.com)
+
+---
+
+## ⚖️ Note Legali
+* In nessun caso lo sviluppatore sarà responsabile per errori di cassa o problemi di rete locale.
+* Tutti i diritti riservati. Il software diventerà Open Source (Apache 2.0) il **01-01-2030**.
+
+---
+*Realizzato con ❤️ da **Lorenzo Formento (Luna Wolfie)***
