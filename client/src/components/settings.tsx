@@ -3,13 +3,24 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Save, Plus, Trash2, Settings2, Printer, Tag, Globe,
   CreditCard, MessageSquare, Palette, Monitor, ShieldCheck, ShieldOff, KeyRound,
-  Download, Upload, AlertTriangle, CheckCircle2, HardDrive
+  Download, Upload, AlertTriangle, CheckCircle2, HardDrive, RotateCcw
 } from "lucide-react";
 import { exportBackup, importBackup } from "@/lib/backup";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
@@ -594,6 +605,80 @@ export default function Settings() {
               {backupImporting ? "Importazione in corso..." : "Ripristina da Backup"}
             </Button>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* ── Ripristino Completo ───────────────────────────────── */}
+      <Card className="border-red-200 bg-red-50">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base text-red-700 flex items-center gap-2">
+            <RotateCcw className="w-4 h-4" />
+            Ripristino Completo
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex gap-2 items-start bg-white border border-red-200 rounded-lg p-3">
+            <AlertTriangle className="w-4 h-4 text-red-500 mt-0.5 shrink-0" />
+            <p className="text-xs text-red-700 leading-relaxed">
+              <strong>Attenzione:</strong> questa operazione cancella <strong>tutti i dati</strong> (ordini, menù, impostazioni) e riporta il programma al primo avvio. L'operazione è irreversibile — esegui prima un backup.
+            </p>
+          </div>
+
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                type="button"
+                variant="destructive"
+                className="flex items-center gap-2"
+                data-testid="button-factoryReset"
+              >
+                <RotateCcw className="w-4 h-4" />
+                Ripristina Configurazione Iniziale
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle className="flex items-center gap-2 text-red-600">
+                  <AlertTriangle className="w-5 h-5" />
+                  Sei sicuro?
+                </AlertDialogTitle>
+                <AlertDialogDescription className="space-y-2">
+                  <span className="block">
+                    Stai per cancellare <strong>tutti i dati</strong>:
+                  </span>
+                  <ul className="list-disc list-inside text-sm space-y-1 text-gray-700">
+                    <li>Tutti gli ordini e i riepilogo giornalieri</li>
+                    <li>L'intero menù (piatti e categorie)</li>
+                    <li>Tutte le impostazioni (evento, casse, stampante…)</li>
+                  </ul>
+                  <span className="block mt-2 font-semibold text-red-600">
+                    L'operazione è irreversibile. Esegui prima un backup!
+                  </span>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel data-testid="button-factoryResetCancel">Annulla</AlertDialogCancel>
+                <AlertDialogAction
+                  data-testid="button-factoryResetConfirm"
+                  className="bg-red-600 hover:bg-red-700 text-white"
+                  onClick={async () => {
+                    try {
+                      await apiRequest("DELETE", "/api/data/factory-reset");
+                      localStorage.removeItem("luna_wolfie_setup_complete");
+                      localStorage.removeItem("luna_wolfie_is_pro");
+                      localStorage.removeItem("luna_wolfie_licensed_event");
+                      localStorage.removeItem("registerId");
+                      window.location.href = "/";
+                    } catch {
+                      toast({ title: "Errore", description: "Ripristino non riuscito. Riprova.", variant: "destructive" });
+                    }
+                  }}
+                >
+                  Sì, ripristina tutto
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </CardContent>
       </Card>
 

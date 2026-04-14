@@ -30,6 +30,7 @@ export interface IStorage {
   
   // Data management
   clearAllDataExceptMenu(): Promise<boolean>;
+  factoryReset(): Promise<boolean>;
 
   // Settings
   getSettings(): Promise<AppSettings>;
@@ -269,6 +270,18 @@ export class MemStorage implements IStorage {
     }
   }
 
+  async factoryReset(): Promise<boolean> {
+    try {
+      this.orders.clear();
+      this.orderItems.clear();
+      this.dishes.clear();
+      this.settings = { ...DEFAULT_SETTINGS } as AppSettings;
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   async getSettings(): Promise<AppSettings> {
     return { ...this.settings };
   }
@@ -439,6 +452,20 @@ export class DatabaseStorage implements IStorage {
     try {
       await db.delete(orderItemsTable);
       await db.delete(ordersTable);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  async factoryReset(): Promise<boolean> {
+    try {
+      await db.delete(orderItemsTable);
+      await db.delete(ordersTable);
+      await db.delete(dishesTable);
+      await db.insert(appSettingsTable)
+        .values({ id: 1, data: { ...DEFAULT_SETTINGS } })
+        .onConflictDoUpdate({ target: appSettingsTable.id, set: { data: { ...DEFAULT_SETTINGS } } });
       return true;
     } catch {
       return false;

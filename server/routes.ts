@@ -242,6 +242,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(connected);
   });
 
+  // Factory reset — cancella tutto e ripristina le impostazioni predefinite
+  app.delete("/api/data/factory-reset", async (req, res) => {
+    try {
+      const success = await storage.factoryReset();
+      if (!success) {
+        return res.status(500).json({ message: "Errore nel ripristino" });
+      }
+      broadcastToClients({ type: "DATA_CLEARED", data: {} });
+      res.json({ message: "Reset completato" });
+    } catch {
+      res.status(500).json({ message: "Errore nel ripristino" });
+    }
+  });
+
   // Clear all data except menu
   app.delete("/api/data/clear-except-menu", async (req, res) => {
     try {
