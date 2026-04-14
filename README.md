@@ -19,6 +19,7 @@
 * 📊 **Riepilogo Totali:** Gestione automatica dei conti, delle quantità e del resto per pagamenti in contanti.
 * 🖨️ **Stampa Scontrini:** Formattazione pronta per stampanti termiche (58mm, 80mm) con scontrino cucina e cliente separati.
 * 🧙 **Wizard di Configurazione:** Procedura guidata al primo avvio per configurare evento, casse, menu e piano di licenza.
+* 🔄 **Ripristino Completo:** Pulsante "Ripristina Configurazione Iniziale" nelle impostazioni per cancellare tutti i dati (ordini, menù, impostazioni) e riportare il programma al wizard iniziale, con doppia conferma per evitare errori accidentali.
 * 💾 **Integrità Dati:** Creazione ordini con transazione atomica — nessun ordine incompleto in caso di errore.
 
 ---
