@@ -56,7 +56,7 @@ Obbligatoria per eventi a scopo di lucro, grandi sagre o attività commerciali.
 ## 🛠️ Come Iniziare
 
 1.  **Registrazione:** Prima di iniziare, invia una mail di registrazione a **bibocchia05@gmail.com** (necessaria per assistenza e attivazione PRO).
-2.  **Installazione:** Il software può essere caricato su servizi cloud (come Render) o eseguito localmente.
+2.  **Installazione:** Il software può essere caricato su servizi cloud come **Render** (consigliato, gratuito) oppure eseguito localmente. Trovi la guida completa al deploy su Render qui sotto.
 3.  **Configurazione:** Al primo avvio il wizard guida l'utente in 4 passaggi: nome evento, numero casse, menu iniziale e piano di licenza.
 
 ---
