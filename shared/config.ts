@@ -106,11 +106,11 @@ export const CONFIG = {
   customerReceiptMessage: "Grazie per la vostra visita! 🎉",
 
   // ---------------------------------------------------------------------------
-  //  NUMERO DI CASSE / NUMBER OF REGISTERS  (1–4)
+  //  NUMERO DI CASSE / NUMBER OF REGISTERS
   // ---------------------------------------------------------------------------
 
-  /** Numero di casse attive (da 1 a 4) */
-  /** Number of active registers (1 to 4) */
+  /** Numero di casse attive */
+  /** Number of active registers */
   numberOfRegisters: 2,
 
   /** Prezzo del coperto (0 = disabilitato) */

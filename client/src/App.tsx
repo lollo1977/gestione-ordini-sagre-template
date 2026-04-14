@@ -19,14 +19,16 @@ import Home from "@/pages/home";
 import NotFound from "@/pages/not-found";
 
 function Router() {
-  const [registerId, setRegisterId] = useState<1 | 2 | null>(() => {
+  const [registerId, setRegisterId] = useState<number | null>(() => {
     const saved = localStorage.getItem('registerId');
-    return saved ? parseInt(saved) as 1 | 2 : null;
+    return saved ? parseInt(saved) : null;
   });
+
+  const settings = useAppSettings();
 
   useWebSocket(registerId || undefined);
 
-  const handleRegisterSelect = (id: 1 | 2) => {
+  const handleRegisterSelect = (id: number) => {
     setRegisterId(id);
     localStorage.setItem('registerId', id.toString());
   };
@@ -37,7 +39,12 @@ function Router() {
   };
 
   if (!registerId) {
-    return <RegisterSelector onRegisterSelect={handleRegisterSelect} />;
+    return (
+      <RegisterSelector
+        numberOfRegisters={settings.numberOfRegisters}
+        onRegisterSelect={handleRegisterSelect}
+      />
+    );
   }
 
   return (

@@ -105,7 +105,7 @@ export type AppSettings = {
   customerReceiptMessage: string;
 
   // Registers
-  numberOfRegisters: number; // 1-4
+  numberOfRegisters: number;
 
   // Economic settings
   coverPrice: number; // 0 = disabled

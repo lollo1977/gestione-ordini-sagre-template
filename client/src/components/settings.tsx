@@ -245,13 +245,13 @@ export default function Settings() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label>Numero di casse attive <span className="text-gray-400 font-normal">(1 – 4)</span></Label>
+            <Label>Numero di casse attive</Label>
             <Select value={String(form.numberOfRegisters)} onValueChange={v => set("numberOfRegisters", Number(v))}>
               <SelectTrigger className="mt-1 w-32" data-testid="select-numberOfRegisters">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {[1, 2, 3, 4].map(n => (
+                {Array.from({ length: 10 }, (_, i) => i + 1).map(n => (
                   <SelectItem key={n} value={String(n)}>{n}</SelectItem>
                 ))}
               </SelectContent>
