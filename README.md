@@ -57,6 +57,10 @@ Obbligatoria per eventi a scopo di lucro, grandi sagre o attività commerciali.
 
 ## 🚀 Guida al Deploy su Render
 
+### Prerequisiti
+- [Node.js](https://nodejs.org) installato sul tuo computer (versione 18 o superiore)
+- Un account [GitHub](https://github.com) e [Render](https://render.com)
+
 ### 1. Scarica il progetto
 Clona o scarica il progetto da GitHub sul tuo computer:
 ```bash
@@ -65,11 +69,11 @@ cd TUA_REPO
 ```
 
 ### 2. Configura il nome del tuo evento
-Esegui lo script di configurazione e inserisci il nome della tua sagra/evento:
+Il progetto include già lo script `scripts/setup-render.js` — eseguilo e inserisci il nome della tua sagra/evento quando richiesto:
 ```bash
 node scripts/setup-render.js
 ```
-Lo script chiederà il nome dell'evento e aggiornerà automaticamente il file di configurazione del deploy.
+Lo script chiederà il nome dell'evento e aggiornerà automaticamente il file `render.yaml` con i nomi corretti per il deploy.
 
 ### 3. Fai il push su GitHub
 Salva le modifiche e caricale su GitHub:
