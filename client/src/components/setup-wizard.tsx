@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronRight, ChevronLeft, Plus, Trash2, Check, Moon, Sparkles, ShieldCheck, Utensils, Euro, CreditCard, Download, PartyPopper } from "lucide-react";
+import { ChevronRight, ChevronLeft, Plus, Trash2, Check, Moon, Sparkles, ShieldCheck, Utensils, Euro, CreditCard, Download, PartyPopper, Monitor } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -109,6 +109,7 @@ export default function SetupWizard() {
   const [coverPrice, setCoverPrice] = useState("0.00");
   const [takeaway, setTakeaway] = useState(false);
   const [payment, setPayment] = useState<PaymentMode>("both");
+  const [numberOfRegisters, setNumberOfRegisters] = useState(1);
 
   // Step 3
   const [dishes, setDishes] = useState<WizardDish[]>([
@@ -172,6 +173,7 @@ export default function SetupWizard() {
         extraPaymentLabel: extraPayment,
         coverPrice: parseFloat(coverPrice) || 0,
         takeawayEnabled: takeaway,
+        numberOfRegisters,
         dishCategories: { ...CONFIG.dishCategories },
       };
 
@@ -377,6 +379,36 @@ export default function SetupWizard() {
                     <PaymentPill value="pos" current={payment} label="Solo POS" icon={CreditCard} onClick={() => setPayment("pos")} />
                     <PaymentPill value="both" current={payment} label="Entrambi" icon={Check} onClick={() => setPayment("both")} />
                   </div>
+                </div>
+
+                <div>
+                  <Label className="text-sm font-medium text-gray-700 flex items-center gap-1.5 mb-2">
+                    <Monitor className="w-3.5 h-3.5" />
+                    Quante casse utilizzerai?
+                    <span className="text-gray-400 font-normal text-xs">(modificabile in seguito)</span>
+                  </Label>
+                  <div className="flex flex-wrap gap-2">
+                    {Array.from({ length: 10 }, (_, i) => i + 1).map(n => (
+                      <button
+                        key={n}
+                        type="button"
+                        data-testid={`wizard-registers-${n}`}
+                        onClick={() => setNumberOfRegisters(n)}
+                        className={`w-10 h-10 rounded-xl border-2 text-sm font-semibold transition-all ${
+                          numberOfRegisters === n
+                            ? "border-primary bg-primary/5 text-primary"
+                            : "border-gray-200 text-gray-500 hover:border-gray-300"
+                        }`}
+                      >
+                        {n}
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-400 mt-2">
+                    {numberOfRegisters === 1
+                      ? "Userai una sola cassa."
+                      : `Userai ${numberOfRegisters} casse sincronizzate in tempo reale.`}
+                  </p>
                 </div>
               </div>
             </div>
