@@ -19,6 +19,18 @@ All components automatically read from these two files — no other changes need
 
 ## Recent Changes
 
+**April 14, 2026:**
+- ✓ Casse configurabili da 1 a 10 (rimosso limite fisso a 4)
+- ✓ Selettore casse dinamico: mostra N pulsanti in base alla configurazione
+- ✓ Indicatore stato WebSocket in tempo reale nell'header (verde/rosso)
+- ✓ Casse già connesse visibili nel selettore con pallino verde "attiva"
+- ✓ Endpoint `/api/registers/active` per la lista casse connesse
+- ✓ Broadcast `REGISTERS_STATUS` su connessione e disconnessione
+- ✓ Gestione `ORDER_DELETED` nel WebSocket client (storno sincronizzato tra casse)
+- ✓ Creazione ordine wrappata in transazione DB atomica (no ordini fantasma)
+- ✓ Wizard iniziale: aggiunta domanda sul numero di casse nello step 2
+- ✓ Migrazione completata da Replit Agent a ambiente Replit standard
+
 **April 2, 2026:**
 - ✓ Creato `shared/config.ts` come punto unico di configurazione per tutta l'app
 - ✓ Tutti i valori hardcoded spostati in config: nome evento, valuta, categorie, locale, carta stampante
