@@ -515,7 +515,7 @@ export class DatabaseStorage implements IStorage {
   private async computeEventStats(event: SagraEvent): Promise<EventStats> {
     // All orders for this date
     const dayOrders = await db.select().from(ordersTable)
-      .where(sql`DATE(${ordersTable.createdAt} AT TIME ZONE 'Europe/Rome') = ${event.date}::date`);
+      .where(sql`DATE((${ordersTable.createdAt} AT TIME ZONE 'UTC') AT TIME ZONE 'Europe/Rome') = ${event.date}::date`);
 
     const totalRevenue = dayOrders.reduce((s, o) => s + parseFloat(o.total), 0);
     const totalOrders = dayOrders.length;
@@ -552,15 +552,15 @@ export class DatabaseStorage implements IStorage {
         .sort((a, b) => b.quantity - a.quantity);
     }
 
-    // Hourly stats — ora locale italiana (Europe/Rome)
+    // Hourly stats — ora locale italiana: UTC → Europe/Rome
     const hourlyRows = await db.select({
-      hour: sql<number>`EXTRACT(HOUR FROM ${ordersTable.createdAt} AT TIME ZONE 'Europe/Rome')::int`,
+      hour: sql<number>`EXTRACT(HOUR FROM (${ordersTable.createdAt} AT TIME ZONE 'UTC') AT TIME ZONE 'Europe/Rome')::int`,
       orders: sql<number>`COUNT(*)::int`,
       revenue: sql<number>`COALESCE(SUM(${ordersTable.total}::numeric), 0)::float`,
     }).from(ordersTable)
-      .where(sql`DATE(${ordersTable.createdAt} AT TIME ZONE 'Europe/Rome') = ${event.date}::date`)
-      .groupBy(sql`EXTRACT(HOUR FROM ${ordersTable.createdAt} AT TIME ZONE 'Europe/Rome')`)
-      .orderBy(sql`EXTRACT(HOUR FROM ${ordersTable.createdAt} AT TIME ZONE 'Europe/Rome')`);
+      .where(sql`DATE((${ordersTable.createdAt} AT TIME ZONE 'UTC') AT TIME ZONE 'Europe/Rome') = ${event.date}::date`)
+      .groupBy(sql`EXTRACT(HOUR FROM (${ordersTable.createdAt} AT TIME ZONE 'UTC') AT TIME ZONE 'Europe/Rome')`)
+      .orderBy(sql`EXTRACT(HOUR FROM (${ordersTable.createdAt} AT TIME ZONE 'UTC') AT TIME ZONE 'Europe/Rome')`);
 
     const hourlyStats: HourlyStats[] = hourlyRows.map(r => ({
       hour: r.hour,
