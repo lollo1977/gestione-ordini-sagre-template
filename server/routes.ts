@@ -204,6 +204,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Sagra Events routes
+  app.get("/api/sagra-events", async (_req, res) => {
+    try { res.json(await storage.getSagraEvents()); }
+    catch { res.status(500).json({ message: "Errore nel recupero delle sessioni" }); }
+  });
+
+  app.post("/api/sagra-events", async (req, res) => {
+    try { res.status(201).json(await storage.createSagraEvent(req.body)); }
+    catch { res.status(500).json({ message: "Errore nella creazione della sessione" }); }
+  });
+
+  app.put("/api/sagra-events/:id", async (req, res) => {
+    try {
+      const updated = await storage.updateSagraEvent(req.params.id, req.body);
+      if (!updated) return res.status(404).json({ message: "Sessione non trovata" });
+      res.json(updated);
+    } catch { res.status(500).json({ message: "Errore nell'aggiornamento della sessione" }); }
+  });
+
+  app.delete("/api/sagra-events/:id", async (req, res) => {
+    try {
+      const ok = await storage.deleteSagraEvent(req.params.id);
+      if (!ok) return res.status(404).json({ message: "Sessione non trovata" });
+      res.json({ message: "Sessione eliminata" });
+    } catch { res.status(500).json({ message: "Errore nell'eliminazione della sessione" }); }
+  });
+
+  app.get("/api/analytics/event/:id", async (req, res) => {
+    try {
+      const stats = await storage.getEventStats(req.params.id);
+      if (!stats) return res.status(404).json({ message: "Sessione non trovata" });
+      res.json(stats);
+    } catch { res.status(500).json({ message: "Errore nel calcolo delle statistiche" }); }
+  });
+
+  app.get("/api/analytics/compare", async (req, res) => {
+    try {
+      const { a, b } = req.query as { a: string; b: string };
+      if (!a || !b) return res.status(400).json({ message: "Parametri mancanti (a, b)" });
+      const data = await storage.compareEvents(a, b);
+      if (!data) return res.status(404).json({ message: "Una o entrambe le sessioni non trovate" });
+      res.json(data);
+    } catch { res.status(500).json({ message: "Errore nel confronto" }); }
+  });
+
   // Analytics routes
   app.get("/api/analytics/daily", async (req, res) => {
     try {

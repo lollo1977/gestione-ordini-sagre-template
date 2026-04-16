@@ -4,9 +4,9 @@
  * Licenza Proprietaria v2.1 - Tutti i diritti riservati.
  * Consultare il file LICENSE nella root del progetto per i termini completi.
  */
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { db } from "./db";
-import { dishes as dishesTable, orders as ordersTable, orderItems as orderItemsTable, appSettingsTable, type Dish, type InsertDish, type Order, type InsertOrder, type OrderItem, type InsertOrderItem, type OrderWithItems, type DishSales, type DailyStats, type AppSettings } from "@shared/schema";
+import { dishes as dishesTable, orders as ordersTable, orderItems as orderItemsTable, appSettingsTable, sagraEvents as sagraEventsTable, type Dish, type InsertDish, type Order, type InsertOrder, type OrderItem, type InsertOrderItem, type OrderWithItems, type DishSales, type DailyStats, type AppSettings, type SagraEvent, type InsertSagraEvent, type HourlyStats, type EventStats, type ComparisonData } from "@shared/schema";
 import { CONFIG } from "@shared/config";
 import { randomUUID } from "crypto";
 
@@ -38,6 +38,16 @@ export interface IStorage {
 
   // Storno
   deleteOrder(id: string): Promise<boolean>;
+
+  // Sagra Events
+  getSagraEvents(): Promise<SagraEvent[]>;
+  createSagraEvent(event: InsertSagraEvent): Promise<SagraEvent>;
+  updateSagraEvent(id: string, event: Partial<InsertSagraEvent>): Promise<SagraEvent | undefined>;
+  deleteSagraEvent(id: string): Promise<boolean>;
+
+  // Advanced Analytics
+  getEventStats(eventId: string): Promise<EventStats | null>;
+  compareEvents(idA: string, idB: string): Promise<ComparisonData | null>;
 }
 
 export class MemStorage implements IStorage {
@@ -282,6 +292,13 @@ export class MemStorage implements IStorage {
     }
   }
 
+  async getSagraEvents(): Promise<SagraEvent[]> { return []; }
+  async createSagraEvent(_event: InsertSagraEvent): Promise<SagraEvent> { throw new Error("Not supported in MemStorage"); }
+  async updateSagraEvent(_id: string, _event: Partial<InsertSagraEvent>): Promise<SagraEvent | undefined> { return undefined; }
+  async deleteSagraEvent(_id: string): Promise<boolean> { return false; }
+  async getEventStats(_eventId: string): Promise<EventStats | null> { return null; }
+  async compareEvents(_idA: string, _idB: string): Promise<ComparisonData | null> { return null; }
+
   async getSettings(): Promise<AppSettings> {
     return { ...this.settings };
   }
@@ -470,6 +487,114 @@ export class DatabaseStorage implements IStorage {
     } catch {
       return false;
     }
+  }
+
+  // ── Sagra Events ────────────────────────────────────────────────────────────
+
+  async getSagraEvents(): Promise<SagraEvent[]> {
+    return db.select().from(sagraEventsTable).orderBy(sql`${sagraEventsTable.date} DESC`);
+  }
+
+  async createSagraEvent(event: InsertSagraEvent): Promise<SagraEvent> {
+    const [row] = await db.insert(sagraEventsTable).values(event).returning();
+    return row;
+  }
+
+  async updateSagraEvent(id: string, event: Partial<InsertSagraEvent>): Promise<SagraEvent | undefined> {
+    const [row] = await db.update(sagraEventsTable).set(event).where(eq(sagraEventsTable.id, id)).returning();
+    return row;
+  }
+
+  async deleteSagraEvent(id: string): Promise<boolean> {
+    const result = await db.delete(sagraEventsTable).where(eq(sagraEventsTable.id, id)).returning();
+    return result.length > 0;
+  }
+
+  // ── Advanced Analytics ───────────────────────────────────────────────────────
+
+  private async computeEventStats(event: SagraEvent): Promise<EventStats> {
+    // All orders for this date
+    const dayOrders = await db.select().from(ordersTable)
+      .where(sql`DATE(${ordersTable.createdAt}) = ${event.date}::date`);
+
+    const totalRevenue = dayOrders.reduce((s, o) => s + parseFloat(o.total), 0);
+    const totalOrders = dayOrders.length;
+    const totalCovers = dayOrders.reduce((s, o) => s + o.covers, 0);
+    const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
+
+    const cashAmount = dayOrders.filter(o => o.paymentMethod === "cash").reduce((s, o) => s + parseFloat(o.total), 0);
+    const posAmount = dayOrders.filter(o => o.paymentMethod !== "cash").reduce((s, o) => s + parseFloat(o.total), 0);
+
+    // Dish sales for this date
+    const orderIds = dayOrders.map(o => o.id);
+    let dishSales: DishSales[] = [];
+    if (orderIds.length > 0) {
+      const items = await db.select({
+        dishId: orderItemsTable.dishId,
+        quantity: orderItemsTable.quantity,
+        price: orderItemsTable.price,
+      }).from(orderItemsTable)
+        .where(sql`${orderItemsTable.orderId} = ANY(${sql.raw(`ARRAY[${orderIds.map(id => `'${id}'`).join(',')}]::varchar[]`)})`)
+
+      const allDishes = await db.select().from(dishesTable);
+      const dishMap = new Map(allDishes.map(d => [d.id, d]));
+      const salesMap = new Map<string, { quantity: number; revenue: number }>();
+      for (const item of items) {
+        const existing = salesMap.get(item.dishId) ?? { quantity: 0, revenue: 0 };
+        salesMap.set(item.dishId, {
+          quantity: existing.quantity + item.quantity,
+          revenue: existing.revenue + parseFloat(item.price) * item.quantity,
+        });
+      }
+      dishSales = Array.from(salesMap.entries())
+        .map(([dishId, stats]) => ({ dish: dishMap.get(dishId)!, ...stats }))
+        .filter(s => s.dish)
+        .sort((a, b) => b.quantity - a.quantity);
+    }
+
+    // Hourly stats
+    const hourlyRows = await db.select({
+      hour: sql<number>`EXTRACT(HOUR FROM ${ordersTable.createdAt})::int`,
+      orders: sql<number>`COUNT(*)::int`,
+      revenue: sql<number>`COALESCE(SUM(${ordersTable.total}::numeric), 0)::float`,
+    }).from(ordersTable)
+      .where(sql`DATE(${ordersTable.createdAt}) = ${event.date}::date`)
+      .groupBy(sql`EXTRACT(HOUR FROM ${ordersTable.createdAt})`)
+      .orderBy(sql`EXTRACT(HOUR FROM ${ordersTable.createdAt})`);
+
+    const hourlyStats: HourlyStats[] = hourlyRows.map(r => ({
+      hour: r.hour,
+      orders: r.orders,
+      revenue: Number(r.revenue),
+    }));
+
+    return {
+      event,
+      totalRevenue,
+      totalOrders,
+      totalCovers,
+      averageOrderValue,
+      dishSales,
+      hourlyStats,
+      paymentStats: {
+        cash: { amount: cashAmount, percentage: totalRevenue > 0 ? (cashAmount / totalRevenue) * 100 : 0 },
+        pos: { amount: posAmount, percentage: totalRevenue > 0 ? (posAmount / totalRevenue) * 100 : 0 },
+      },
+    };
+  }
+
+  async getEventStats(eventId: string): Promise<EventStats | null> {
+    const [event] = await db.select().from(sagraEventsTable).where(eq(sagraEventsTable.id, eventId));
+    if (!event) return null;
+    return this.computeEventStats(event);
+  }
+
+  async compareEvents(idA: string, idB: string): Promise<ComparisonData | null> {
+    const [evA] = await db.select().from(sagraEventsTable).where(eq(sagraEventsTable.id, idA));
+    const [evB] = await db.select().from(sagraEventsTable).where(eq(sagraEventsTable.id, idB));
+    if (!evA || !evB) return null;
+    const [eventA, eventB] = await Promise.all([this.computeEventStats(evA), this.computeEventStats(evB)]);
+    return { eventA, eventB };
   }
 
   async getSettings(): Promise<AppSettings> {

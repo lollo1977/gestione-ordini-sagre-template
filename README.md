@@ -20,6 +20,7 @@
 * 🖨️ **Stampa Scontrini:** Formattazione pronta per stampanti termiche (58mm, 80mm) con scontrino cucina e cliente separati.
 * 🧙 **Wizard di Configurazione:** Procedura guidata al primo avvio per configurare evento, casse, menu e piano di licenza.
 * 🔄 **Ripristino Completo:** Pulsante "Ripristina Configurazione Iniziale" nelle impostazioni per cancellare tutti i dati (ordini, menù, impostazioni) e riportare il programma al wizard iniziale, con doppia conferma per evitare errori accidentali.
+* 📈 **Analisi Multi-Serata:** Registra ogni serata della sagra come sessione (nome + data), poi visualizza report completi per serata — incasso, ordini, coperti, scontrino medio, grafico orario, vendite per piatto. Confronta due serate affiancate (quantità piatto per piatto, andamento orario, differenze) per capire il sabato vs domenica, giugno vs luglio, ecc.
 * 💾 **Integrità Dati:** Creazione ordini con transazione atomica — nessun ordine incompleto in caso di errore.
 
 ---

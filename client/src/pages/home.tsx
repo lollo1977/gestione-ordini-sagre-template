@@ -1,16 +1,17 @@
 import { useState } from "react";
-import { Utensils, Receipt, List, BarChart3, Settings, Info } from "lucide-react";
+import { Utensils, Receipt, List, BarChart3, Settings, Info, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import OrderForm from "@/components/order-form";
 import ActiveOrders from "@/components/active-orders";
 import MenuManagement from "@/components/menu-management";
 import Reports from "@/components/reports";
+import Analytics from "@/components/analytics";
 import SettingsPage from "@/components/settings";
 import Credits from "@/components/credits";
 import { useLicense } from "@/hooks/use-license";
 import { useAppSettings } from "@/hooks/use-app-settings";
 
-type TabType = "ordini" | "menu" | "report" | "impostazioni" | "info";
+type TabType = "ordini" | "menu" | "report" | "analisi" | "impostazioni" | "info";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<TabType>("ordini");
@@ -21,6 +22,7 @@ export default function Home() {
     { id: "ordini" as const, label: "Ordini", icon: Receipt },
     { id: "menu" as const, label: "Menù", icon: List },
     { id: "report" as const, label: "Report", icon: BarChart3 },
+    { id: "analisi" as const, label: "Analisi", icon: TrendingUp },
     { id: "impostazioni" as const, label: "Impostazioni", icon: Settings },
     { id: "info" as const, label: "Info", icon: Info },
   ];
@@ -71,6 +73,7 @@ export default function Home() {
         )}
         {activeTab === "menu" && <MenuManagement />}
         {activeTab === "report" && <Reports />}
+        {activeTab === "analisi" && <Analytics />}
         {activeTab === "impostazioni" && <SettingsPage />}
         {activeTab === "info" && <Credits />}
       </main>

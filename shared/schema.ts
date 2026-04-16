@@ -68,6 +68,17 @@ export type OrderWithItems = Order & {
 export const DISH_CATEGORIES = _DISH_CATEGORIES;
 export type DishCategory = string;
 
+export const sagraEvents = pgTable("sagra_events", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  date: text("date").notNull(), // ISO "YYYY-MM-DD"
+  notes: text("notes").default(""),
+});
+
+export const insertSagraEventSchema = createInsertSchema(sagraEvents).omit({ id: true });
+export type InsertSagraEvent = z.infer<typeof insertSagraEventSchema>;
+export type SagraEvent = typeof sagraEvents.$inferSelect;
+
 export const appSettingsTable = pgTable("app_settings", {
   id: integer("id").primaryKey().default(1),
   data: jsonb("data").notNull(),
@@ -135,4 +146,29 @@ export type DailyStats = {
     cash: { amount: number; percentage: number };
     pos: { amount: number; percentage: number };
   };
+};
+
+export type HourlyStats = {
+  hour: number;
+  orders: number;
+  revenue: number;
+};
+
+export type EventStats = {
+  event: SagraEvent;
+  totalRevenue: number;
+  totalOrders: number;
+  totalCovers: number;
+  averageOrderValue: number;
+  dishSales: DishSales[];
+  hourlyStats: HourlyStats[];
+  paymentStats: {
+    cash: { amount: number; percentage: number };
+    pos: { amount: number; percentage: number };
+  };
+};
+
+export type ComparisonData = {
+  eventA: EventStats;
+  eventB: EventStats;
 };

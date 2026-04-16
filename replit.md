@@ -19,6 +19,19 @@ All components automatically read from these two files — no other changes need
 
 ## Recent Changes
 
+**April 16, 2026:**
+- ✓ Nuova sezione "Analisi" (tab dedicato in home.tsx)
+- ✓ Tabella `sagra_events` nel DB: id, name, date (ISO), notes
+- ✓ CRUD completo sessioni sagra via API REST (`/api/sagra-events`)
+- ✓ Endpoint `/api/analytics/event/:id` — statistiche complete per serata (incasso, ordini, coperti, piatti, orario)
+- ✓ Endpoint `/api/analytics/compare?a=&b=` — confronto affiancato tra due serate
+- ✓ Metodi `DatabaseStorage`: `getSagraEvents`, `createSagraEvent`, `updateSagraEvent`, `deleteSagraEvent`, `getEventStats`, `compareEvents`, `computeEventStats` (private helper)
+- ✓ Grafico orario BarChart (recharts) per andamento ordini/incasso ora per ora
+- ✓ Grafico LineChart confronto orario tra due serate sovrapposte
+- ✓ Tabella confronto piatti: Qtà A vs Qtà B con differenza colorata (+/-)
+- ✓ Nomi personalizzati casse (impostazioni → selettore e header)
+- ✓ Factory reset completo (cancella tutto e riporta al wizard)
+
 **April 14, 2026:**
 - ✓ Casse configurabili da 1 a 10 (rimosso limite fisso a 4)
 - ✓ Selettore casse dinamico: mostra N pulsanti in base alla configurazione
