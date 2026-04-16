@@ -31,8 +31,10 @@ type AnalyticsTab = "sessioni" | "report" | "confronto";
 
 const PALETTE = ["#2563eb", "#16a34a", "#dc2626", "#d97706", "#7c3aed", "#0891b2"];
 
-function formatHour(h: number) {
-  return `${String(h).padStart(2, "0")}:00`;
+function formatSlot(slot: number) {
+  const h = Math.floor(slot / 2);
+  const m = slot % 2 === 0 ? "00" : "30";
+  return `${String(h).padStart(2, "0")}:${m}`;
 }
 
 function formatDate(iso: string) {
@@ -327,14 +329,14 @@ function ReportTab() {
                 <ResponsiveContainer width="100%" height={220}>
                   <BarChart data={hourlyWithGaps} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                    <XAxis dataKey="hourLabel" tick={{ fontSize: 11 }} />
+                    <XAxis dataKey="hourLabel" tick={{ fontSize: 10 }} interval={1} />
                     <YAxis yAxisId="orders" orientation="left" tick={{ fontSize: 11 }} label={{ value: "Ordini", angle: -90, position: "insideLeft", style: { fontSize: 10 } }} />
                     <YAxis yAxisId="revenue" orientation="right" tick={{ fontSize: 11 }} tickFormatter={v => `${sym}${v.toFixed(0)}`} />
                     <Tooltip
                       formatter={(val: number, name: string) =>
                         name === "Ordini" ? [val, "Ordini"] : [`${sym}${Number(val).toFixed(2)}`, "Incasso"]
                       }
-                      labelFormatter={l => `Ore ${l}`}
+                      labelFormatter={l => `Fascia ${l}`}
                     />
                     <Legend />
                     <Bar yAxisId="orders" dataKey="orders" name="Ordini" fill="#2563eb" radius={[3, 3, 0, 0]} />
@@ -529,9 +531,9 @@ function ConfrontoTab() {
                 <ResponsiveContainer width="100%" height={220}>
                   <LineChart data={hourlyMerged} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                    <XAxis dataKey="hourLabel" tick={{ fontSize: 11 }} />
+                    <XAxis dataKey="hourLabel" tick={{ fontSize: 10 }} interval={1} />
                     <YAxis tick={{ fontSize: 11 }} />
-                    <Tooltip labelFormatter={l => `Ore ${l}`} />
+                    <Tooltip labelFormatter={l => `Fascia ${l}`} />
                     <Legend />
                     <Line type="monotone" dataKey="ordersA" name={cmp.eventA.event.name} stroke="#2563eb" strokeWidth={2} dot={false} />
                     <Line type="monotone" dataKey="ordersB" name={cmp.eventB.event.name} stroke="#16a34a" strokeWidth={2} dot={false} />
@@ -651,34 +653,34 @@ function CompareMetric({ label, a, b, diff, sym, isRevenue }: { label: string; a
 
 // ── Helper functions ──────────────────────────────────────────────────────────
 
-function buildHourlyFull(hourlyStats: { hour: number; orders: number; revenue: number }[]) {
+function buildHourlyFull(hourlyStats: { slot: number; orders: number; revenue: number }[]) {
   if (hourlyStats.length === 0) return [];
-  const minH = Math.min(...hourlyStats.map(h => h.hour));
-  const maxH = Math.max(...hourlyStats.map(h => h.hour));
-  const map = new Map(hourlyStats.map(h => [h.hour, h]));
+  const minS = Math.min(...hourlyStats.map(h => h.slot));
+  const maxS = Math.max(...hourlyStats.map(h => h.slot));
+  const map = new Map(hourlyStats.map(h => [h.slot, h]));
   const result = [];
-  for (let h = minH; h <= maxH; h++) {
-    result.push({ hourLabel: formatHour(h), ...(map.get(h) ?? { hour: h, orders: 0, revenue: 0 }) });
+  for (let s = minS; s <= maxS; s++) {
+    result.push({ hourLabel: formatSlot(s), ...(map.get(s) ?? { slot: s, orders: 0, revenue: 0 }) });
   }
   return result;
 }
 
 function buildHourlyMerged(
-  hA: { hour: number; orders: number; revenue: number }[],
-  hB: { hour: number; orders: number; revenue: number }[],
+  hA: { slot: number; orders: number; revenue: number }[],
+  hB: { slot: number; orders: number; revenue: number }[],
 ) {
-  const allHours = Array.from(new Set([...hA.map(h => h.hour), ...hB.map(h => h.hour)])).sort((a, b) => a - b);
-  if (allHours.length === 0) return [];
-  const mapA = new Map(hA.map(h => [h.hour, h]));
-  const mapB = new Map(hB.map(h => [h.hour, h]));
-  const minH = allHours[0];
-  const maxH = allHours[allHours.length - 1];
+  const allSlots = Array.from(new Set([...hA.map(h => h.slot), ...hB.map(h => h.slot)])).sort((a, b) => a - b);
+  if (allSlots.length === 0) return [];
+  const mapA = new Map(hA.map(h => [h.slot, h]));
+  const mapB = new Map(hB.map(h => [h.slot, h]));
+  const minS = allSlots[0];
+  const maxS = allSlots[allSlots.length - 1];
   const result = [];
-  for (let h = minH; h <= maxH; h++) {
+  for (let s = minS; s <= maxS; s++) {
     result.push({
-      hourLabel: formatHour(h),
-      ordersA: mapA.get(h)?.orders ?? 0,
-      ordersB: mapB.get(h)?.orders ?? 0,
+      hourLabel: formatSlot(s),
+      ordersA: mapA.get(s)?.orders ?? 0,
+      ordersB: mapB.get(s)?.orders ?? 0,
     });
   }
   return result;

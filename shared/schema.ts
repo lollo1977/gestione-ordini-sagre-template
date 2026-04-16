@@ -149,7 +149,7 @@ export type DailyStats = {
 };
 
 export type HourlyStats = {
-  hour: number;
+  slot: number; // indice fascia 30min: ora*2 + (minuti>=30 ? 1 : 0), range 0-47
   orders: number;
   revenue: number;
 };

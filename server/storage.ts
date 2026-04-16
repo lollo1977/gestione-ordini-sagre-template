@@ -552,18 +552,20 @@ export class DatabaseStorage implements IStorage {
         .sort((a, b) => b.quantity - a.quantity);
     }
 
-    // Hourly stats — ora locale italiana: UTC → Europe/Rome
+    // Fasce da 30 min — ora locale italiana: UTC → Europe/Rome
+    const localTs = sql`(${ordersTable.createdAt} AT TIME ZONE 'UTC') AT TIME ZONE 'Europe/Rome'`;
+    const slotExpr = sql`(EXTRACT(HOUR FROM ${localTs}) * 2 + FLOOR(EXTRACT(MINUTE FROM ${localTs}) / 30))::int`;
     const hourlyRows = await db.select({
-      hour: sql<number>`EXTRACT(HOUR FROM (${ordersTable.createdAt} AT TIME ZONE 'UTC') AT TIME ZONE 'Europe/Rome')::int`,
+      slot: slotExpr.as<number>(),
       orders: sql<number>`COUNT(*)::int`,
       revenue: sql<number>`COALESCE(SUM(${ordersTable.total}::numeric), 0)::float`,
     }).from(ordersTable)
-      .where(sql`DATE((${ordersTable.createdAt} AT TIME ZONE 'UTC') AT TIME ZONE 'Europe/Rome') = ${event.date}::date`)
-      .groupBy(sql`EXTRACT(HOUR FROM (${ordersTable.createdAt} AT TIME ZONE 'UTC') AT TIME ZONE 'Europe/Rome')`)
-      .orderBy(sql`EXTRACT(HOUR FROM (${ordersTable.createdAt} AT TIME ZONE 'UTC') AT TIME ZONE 'Europe/Rome')`);
+      .where(sql`DATE(${localTs}) = ${event.date}::date`)
+      .groupBy(slotExpr)
+      .orderBy(slotExpr);
 
     const hourlyStats: HourlyStats[] = hourlyRows.map(r => ({
-      hour: r.hour,
+      slot: r.slot as unknown as number,
       orders: r.orders,
       revenue: Number(r.revenue),
     }));
